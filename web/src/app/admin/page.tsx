@@ -1,27 +1,34 @@
 "use client";
 
 import axios from "axios";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 
 import Button from "@/components/common/Button";
 import { formatDate } from "@/helpers/formatDate";
 import { usePosts } from "../store/usePosts";
+import { Post } from "@/types/Post";
 
 export default function Admin() {
-  const { posts, page, limit, fetchPosts } = usePosts((state) => ({
-    posts: state.posts,
-    page: state.page,
-    limit: state.limit,
-    fetchPosts: state.fetchPosts,
-  }));
+  const [posts, setPosts] = useState<Post[]>([]);
+
+  const fetchPosts = () => {
+    fetch("http://localhost:4000/api/posts")
+      .then((res) => res.json())
+      .then((posts) => {
+        const sortedPosts = posts.sort(
+          (a: Post, b: Post) => +new Date(b.dateTime) - +new Date(a.dateTime)
+        );
+
+        setPosts(sortedPosts);
+      })
+      .catch((error) => console.error("Error fetching posts:", error));
+  };
 
   useEffect(() => {
-    fetchPosts(); // Fetch initial posts
+    fetchPosts();
   }, []);
-
-  const displayedPosts = posts.slice(0, page * limit);
 
   const deletePost = async (slug: string) => {
     try {
@@ -42,16 +49,21 @@ export default function Admin() {
         <Button>New Post</Button>
       </Link>
 
-      {displayedPosts && displayedPosts.length > 0 && (
+      {posts.length > 0 && (
         <ul className="pt-6">
-          {displayedPosts.map((post, index) => (
-            <li className="flex justify-between pt-4" key={index}>
-              <div className="flex items-center">
+          {posts.map((post, index) => (
+            <li
+              className="block justify-between pb-6 md:pb-4 md:flex "
+              key={index}
+            >
+              <div className="block items-center md:flex">
                 <p className="mr-6 text-sm text-gray-400 font-light">
                   {formatDate(new Date(post.dateTime))}
                 </p>
                 <Link href={`/blog/${post.slug}`}>
-                  <p className="text-2xl font-medium">{post.title}</p>
+                  <p className="text-lg  font-medium pt-1 pb-2 md:py-0 md:text-2xl">
+                    {post.title}
+                  </p>
                 </Link>
               </div>
 
@@ -72,11 +84,6 @@ export default function Admin() {
           ))}
         </ul>
       )}
-      <div className="flex items-center justify-center mt-12">
-        <span onClick={() => fetchPosts()}>
-          <Button>Load More</Button>
-        </span>
-      </div>
     </div>
   );
 }

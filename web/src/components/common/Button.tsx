@@ -9,7 +9,7 @@ export default function Button({ children, type = "button" }: ButtonProps) {
   return (
     <button
       type={type} // Passing the type prop to the button element
-      className="inline-flex border rounded-md px-12 py-1 text-sm text-blue-500"
+      className="inline-flex border rounded-md px-12 py-1 text-sm text-blue-500 bg-white"
     >
       {children}
     </button>

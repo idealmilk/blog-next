@@ -42,9 +42,9 @@ export default function PostForm({ post, postAction }: PostFormProps) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="z-10 text-md">
       <p className="pb-6 text-gray-400">タイトル</p>
-      <div className="justify-between mb-4 font-mono text-4xl lg:flex">
+      <div className="justify-between mb-4 font-mono text-2xl md:text-4xl flex">
         <input
-          className={`fixed left-0 top-0 flex w-full justify-center mb-6 backdrop-blur-2xl lg:static lg:w-auto ${
+          className={`flex w-full justify-center mb-6 backdrop-blur-2xl lg:static lg:w-auto ${
             errors.title && "border-red-500"
           } rounded appearance-none focus:outline-none focus:shadow-outline`}
           id="firstName"
@@ -53,7 +53,7 @@ export default function PostForm({ post, postAction }: PostFormProps) {
           {...register("title")}
         />
 
-        <div className="flex flex-col items-center justify-center">
+        <div className="hidden sm:flex flex-col items-center justify-center">
           <Button type="submit">Save</Button>
         </div>
       </div>
@@ -82,6 +82,9 @@ export default function PostForm({ post, postAction }: PostFormProps) {
             errors.body && "border-red-500"
           } rounded appearance-none focus:outline-none focus:shadow-outline`}
         />
+      </div>
+      <div className="flex sm:hidden flex-col pt-6 items-center justify-center">
+        <Button type="submit">Save</Button>
       </div>
     </form>
   );

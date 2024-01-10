@@ -5,22 +5,21 @@ import { useEffect, useState } from "react";
 
 import PostCard from "@/components/PostCard";
 import Button from "@/components/common/Button";
-import { Post } from "@/types/Post";
 import { usePosts } from "./store/usePosts";
 
 export default function Home() {
-  const { posts, page, limit, fetchPosts } = usePosts((state) => ({
+  const { posts, fetchPosts } = usePosts((state) => ({
     posts: state.posts,
-    page: state.page,
-    limit: state.limit,
     fetchPosts: state.fetchPosts,
   }));
+
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     fetchPosts(); // Fetch initial posts
   }, []);
 
-  const displayedPosts = posts.slice(0, page * limit);
+  const displayedPosts = posts.slice(0, page * 5);
 
   return (
     <div className="w-full">
@@ -33,7 +32,12 @@ export default function Home() {
       )}
 
       <div className="flex items-center justify-center mt-12">
-        <span onClick={() => fetchPosts()}>
+        <span
+          onClick={() => {
+            fetchPosts();
+            setPage(page + 1);
+          }}
+        >
           <Button>Load More</Button>
         </span>
       </div>
