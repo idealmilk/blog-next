@@ -1,39 +1,63 @@
 "use client";
 
-import { useState } from "react";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
 import PostCard from "@/components/PostCard";
 import Button from "@/components/common/Button";
-import { usePosts } from "@/store/usePosts";
+import { Post } from "@/types/Post";
 
 export default function Home() {
-  const { posts } = usePosts((state) => ({
-    posts: state.posts,
-  }));
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMorePosts, setHasMorePosts] = useState(true);
 
-  const [page, setPage] = useState(1);
+  const loadPosts = () => {
+    axios
+      .get(`http://localhost:4000/api/posts?page=${currentPage}&limit=10`)
+      .then((response) => {
+        if (currentPage > 1) {
+          setPosts((prevPosts) => [...prevPosts, ...response.data]);
+        } else {
+          setPosts(response.data); // Set new posts for the first page
+        }
 
-  const displayedPosts = posts.slice(0, page * 5);
+        // Disable "Load More" if fewer than 10 posts are returned
+        if (response.data.length < 10) {
+          setHasMorePosts(false);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching posts:", error);
+        setHasMorePosts(false); // Disable "Load More" in case of an error
+      });
+  };
+
+  useEffect(() => {
+    loadPosts();
+  }, [currentPage]);
+
+  const handleLoadMore = () => {
+    setCurrentPage((prevPage) => prevPage + 1);
+  };
 
   return (
     <div className="w-full">
-      {displayedPosts && displayedPosts.length > 0 && (
+      {posts && posts.length > 0 && (
         <div className="w-4/6 mx-auto">
-          {displayedPosts.map((post, index) => (
-            <PostCard data={post} key={index} />
-          ))}
+          {posts.map((post, index) => {
+            return <PostCard data={post} key={index} />;
+          })}
         </div>
       )}
 
-      <div className="flex items-center justify-center mt-12">
-        <span
-          onClick={() => {
-            setPage(page + 1);
-          }}
-        >
-          <Button>Load More</Button>
-        </span>
-      </div>
+      {hasMorePosts && (
+        <div className="flex items-center justify-center mt-12">
+          <span onClick={handleLoadMore}>
+            <Button>Load More</Button>
+          </span>
+        </div>
+      )}
     </div>
   );
 }

@@ -7,22 +7,47 @@ import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 
 import Button from "@/components/common/Button";
 import { formatDate } from "@/helpers/formatDate";
-import { usePosts } from "@/store/usePosts";
 import { Post } from "@/types/Post";
 
 export default function Admin() {
-  const { posts } = usePosts((state) => ({
-    posts: state.posts,
-  }));
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMorePosts, setHasMorePosts] = useState(true);
+
+  const loadPosts = () => {
+    axios
+      .get(`http://localhost:4000/api/posts?page=${currentPage}&limit=10`)
+      .then((response) => {
+        if (currentPage > 1) {
+          setPosts((prevPosts) => [...prevPosts, ...response.data]);
+        } else {
+          setPosts(response.data); // Set new posts for the first page
+        }
+
+        // Disable "Load More" if fewer than 10 posts are returned
+        if (response.data.length < 10) {
+          setHasMorePosts(false);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching posts:", error);
+        setHasMorePosts(false); // Disable "Load More" in case of an error
+      });
+  };
+
+  useEffect(() => {
+    loadPosts();
+  }, [currentPage]);
+
+  const handleLoadMore = () => {
+    setCurrentPage((prevPage) => prevPage + 1);
+  };
 
   const deletePost = async (slug: string) => {
     try {
-      const response = await axios.delete(
-        `http://localhost:4000/api/posts/${slug}`
-      );
-
+      await axios.delete(`http://localhost:4000/api/posts/${slug}`);
       console.log("Post deleted successfully");
-      usePosts.getState().fetchPosts();
+      setPosts((posts) => posts.filter((post) => post.slug !== slug));
     } catch (error) {
       console.error("Failed to delete post", error);
     }
@@ -68,6 +93,13 @@ export default function Admin() {
             </li>
           ))}
         </ul>
+      )}
+      {hasMorePosts && (
+        <div className="flex items-center justify-center mt-12">
+          <span onClick={handleLoadMore}>
+            <Button>Load More</Button>
+          </span>
+        </div>
       )}
     </div>
   );
