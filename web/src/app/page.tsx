@@ -6,23 +6,12 @@ import { useEffect, useState } from "react";
 import PostCard from "@/components/PostCard";
 import Button from "@/components/common/Button";
 import { Post } from "@/types/Post";
+import { usePosts } from "./store/usePosts";
 
 export default function Home() {
-  const [posts, setPosts] = useState<Post[]>([]);
-
-  useEffect(() => {
-    axios
-      .get("http://localhost:4000/api/posts")
-      .then((response) => {
-        console.log("Fetched posts:", response.data); // Log the fetched posts
-        const sortedPosts = response.data.sort(
-          (a: Post, b: Post) => +new Date(b.dateTime) - +new Date(a.dateTime)
-        );
-
-        setPosts(sortedPosts);
-      })
-      .catch((error) => console.error("Error fetching posts:", error));
-  }, []);
+  const { posts } = usePosts((state) => ({
+    posts: state.posts,
+  }));
 
   return (
     <div className="w-full">
