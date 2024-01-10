@@ -2,12 +2,6 @@ import { Post } from "@/types/Post";
 import axios from "axios";
 import { Dispatch, SetStateAction } from "react";
 
-type PostFormProps = {
-  setPosts: Dispatch<SetStateAction<Post[]>>;
-  currentPage: number;
-  setHasMorePosts: Dispatch<SetStateAction<boolean>>;
-};
-
 export const LoadPosts = (
   setPosts: Dispatch<SetStateAction<Post[]>>,
   currentPage: number,
