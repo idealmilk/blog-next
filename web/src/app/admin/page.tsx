@@ -1,7 +1,7 @@
 "use client";
 
 import axios from "axios";
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
 import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 
@@ -10,9 +10,18 @@ import { formatDate } from "@/helpers/formatDate";
 import { usePosts } from "../store/usePosts";
 
 export default function Admin() {
-  const { posts } = usePosts((state) => ({
+  const { posts, page, limit, fetchPosts } = usePosts((state) => ({
     posts: state.posts,
+    page: state.page,
+    limit: state.limit,
+    fetchPosts: state.fetchPosts,
   }));
+
+  useEffect(() => {
+    fetchPosts(); // Fetch initial posts
+  }, []);
+
+  const displayedPosts = posts.slice(0, page * limit);
 
   const deletePost = async (slug: string) => {
     try {
@@ -33,9 +42,9 @@ export default function Admin() {
         <Button>New Post</Button>
       </Link>
 
-      {posts.length > 0 && (
+      {displayedPosts && displayedPosts.length > 0 && (
         <ul className="pt-6">
-          {posts.map((post, index) => (
+          {displayedPosts.map((post, index) => (
             <li className="flex justify-between pt-4" key={index}>
               <div className="flex items-center">
                 <p className="mr-6 text-sm text-gray-400 font-light">
@@ -63,6 +72,11 @@ export default function Admin() {
           ))}
         </ul>
       )}
+      <div className="flex items-center justify-center mt-12">
+        <span onClick={() => fetchPosts()}>
+          <Button>Load More</Button>
+        </span>
+      </div>
     </div>
   );
 }

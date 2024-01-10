@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 import PostForm from "@/components/PostForm";
 import { Post } from "@/types/Post";
+import { usePosts } from "../store/usePosts";
 
 export default function NewPost() {
   const router = useRouter();
@@ -23,6 +24,7 @@ export default function NewPost() {
         }
       );
       console.log("Post created successfully", response.data);
+      usePosts.getState().fetchPosts();
       router.push("/admin");
     } catch (error) {
       console.error("Failed to create post", error);

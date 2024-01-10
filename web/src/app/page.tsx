@@ -9,22 +9,33 @@ import { Post } from "@/types/Post";
 import { usePosts } from "./store/usePosts";
 
 export default function Home() {
-  const { posts } = usePosts((state) => ({
+  const { posts, page, limit, fetchPosts } = usePosts((state) => ({
     posts: state.posts,
+    page: state.page,
+    limit: state.limit,
+    fetchPosts: state.fetchPosts,
   }));
+
+  useEffect(() => {
+    fetchPosts(); // Fetch initial posts
+  }, []);
+
+  const displayedPosts = posts.slice(0, page * limit);
 
   return (
     <div className="w-full">
-      {posts && posts.length > 0 && (
+      {displayedPosts && displayedPosts.length > 0 && (
         <div className="w-4/6 mx-auto">
-          {posts.map((post, index) => {
-            return <PostCard data={post} key={index} />;
-          })}
+          {displayedPosts.map((post, index) => (
+            <PostCard data={post} key={index} />
+          ))}
         </div>
       )}
 
       <div className="flex items-center justify-center mt-12">
-        <Button>Load More</Button>
+        <span onClick={() => fetchPosts()}>
+          <Button>Load More</Button>
+        </span>
       </div>
     </div>
   );
