@@ -6,35 +6,15 @@ import { useEffect, useState } from "react";
 import PostCard from "@/components/PostCard";
 import Button from "@/components/common/Button";
 import { Post } from "@/types/Post";
+import { LoadPosts } from "@/helpers/loadPosts";
 
 export default function Home() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMorePosts, setHasMorePosts] = useState(true);
 
-  const loadPosts = () => {
-    axios
-      .get(`http://localhost:4000/api/posts?page=${currentPage}&limit=10`)
-      .then((response) => {
-        if (currentPage > 1) {
-          setPosts((prevPosts) => [...prevPosts, ...response.data]);
-        } else {
-          setPosts(response.data); // Set new posts for the first page
-        }
-
-        // Disable "Load More" if fewer than 10 posts are returned
-        if (response.data.length < 10) {
-          setHasMorePosts(false);
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching posts:", error);
-        setHasMorePosts(false); // Disable "Load More" in case of an error
-      });
-  };
-
   useEffect(() => {
-    loadPosts();
+    LoadPosts(setPosts, currentPage, setHasMorePosts);
   }, [currentPage]);
 
   const handleLoadMore = () => {
