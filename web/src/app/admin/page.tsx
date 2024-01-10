@@ -7,7 +7,7 @@ import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 
 import Button from "@/components/common/Button";
 import { formatDate } from "@/helpers/formatDate";
-import { usePosts } from "../store/usePosts";
+import { usePosts } from "@/store/usePosts";
 import { Post } from "@/types/Post";
 
 export default function Admin() {

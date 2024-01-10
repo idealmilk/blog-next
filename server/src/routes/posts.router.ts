@@ -24,14 +24,10 @@ postsRouter.post("/", async (req, res) => {
 
 postsRouter.get("/", async (req: Request, res: Response) => {
   try {
-    const page = parseInt(req.query.page as string) || 1; // Default to page 1 if not provided
-    const limit = parseInt(req.query.limit as string) || 5; // Default to 5 posts per page if not provided
-    const skip = (page - 1) * limit;
-
-    const posts = await PostModel.find().skip(skip).limit(limit);
-    res.status(200).json(posts);
+    const posts = await PostModel.find(); // Fetch all posts
+    res.status(200).json(posts); // Send the posts as JSON
   } catch (e: any) {
-    res.status(500).send(e.message);
+    res.status(500).send(e.message); // Send the error message in case of an error
   }
 });
 

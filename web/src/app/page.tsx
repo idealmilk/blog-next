@@ -1,11 +1,10 @@
 "use client";
 
-import axios from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import PostCard from "@/components/PostCard";
 import Button from "@/components/common/Button";
-import { usePosts } from "./store/usePosts";
+import { usePosts } from "@/store/usePosts";
 
 export default function Home() {
   const { posts } = usePosts((state) => ({
