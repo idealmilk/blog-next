@@ -8,16 +8,11 @@ import Button from "@/components/common/Button";
 import { usePosts } from "./store/usePosts";
 
 export default function Home() {
-  const { posts, fetchPosts } = usePosts((state) => ({
+  const { posts } = usePosts((state) => ({
     posts: state.posts,
-    fetchPosts: state.fetchPosts,
   }));
 
   const [page, setPage] = useState(1);
-
-  useEffect(() => {
-    fetchPosts(); // Fetch initial posts
-  }, []);
 
   const displayedPosts = posts.slice(0, page * 5);
 
@@ -34,7 +29,6 @@ export default function Home() {
       <div className="flex items-center justify-center mt-12">
         <span
           onClick={() => {
-            fetchPosts();
             setPage(page + 1);
           }}
         >

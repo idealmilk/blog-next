@@ -11,24 +11,9 @@ import { usePosts } from "../store/usePosts";
 import { Post } from "@/types/Post";
 
 export default function Admin() {
-  const [posts, setPosts] = useState<Post[]>([]);
-
-  const fetchPosts = () => {
-    fetch("http://localhost:4000/api/posts")
-      .then((res) => res.json())
-      .then((posts) => {
-        const sortedPosts = posts.sort(
-          (a: Post, b: Post) => +new Date(b.dateTime) - +new Date(a.dateTime)
-        );
-
-        setPosts(sortedPosts);
-      })
-      .catch((error) => console.error("Error fetching posts:", error));
-  };
-
-  useEffect(() => {
-    fetchPosts();
-  }, []);
+  const { posts } = usePosts((state) => ({
+    posts: state.posts,
+  }));
 
   const deletePost = async (slug: string) => {
     try {
