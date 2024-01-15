@@ -20,7 +20,7 @@ export default function BlogPost({ params }: { params: { slug: string } }) {
 
   useEffect(() => {
     fetchPost();
-  });
+  }, [params.slug]);
 
   if (!post) {
     return <div>Loading..</div>;
