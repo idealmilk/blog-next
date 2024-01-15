@@ -1,35 +1,36 @@
 "use client";
 
-import axios from "axios";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
-import { formatDate } from "@/helpers/formatDate";
+import { ReadSinglePost } from "@/app/api/posts";
 import { Post } from "@/types/Post";
+import dayjs from "dayjs";
 
 export default function BlogPost({ params }: { params: { slug: string } }) {
   const [post, setPost] = useState<Post | null>(null);
 
+  const fetchPost = async () => {
+    try {
+      const result = (await ReadSinglePost(params.slug)) as Post;
+      setPost(result);
+    } catch (error) {
+      console.error("Error fetching post:", error);
+    }
+  };
+
   useEffect(() => {
-    axios
-      .get(`http://localhost:4000/api/posts/${params.slug}`)
-      .then((response) => {
-        console.log("Fetched post:", response.data); // Log the fetched post
-        setPost(response.data);
-      })
-      .catch((error) => console.error("Error fetching post:", error));
-  }, [params.slug]);
+    fetchPost();
+  });
 
   if (!post) {
     return <div>Loading..</div>;
   }
 
-  const dateTime = new Date(post.dateTime);
-
   return (
     <div className="w-full pt-6">
       <div className="w-3/5 mx-auto">
         <p className="text-sm text-gray-400 font-light">
-          {formatDate(dateTime)}
+          {dayjs(post.dateTime).format("YYYY/MM/DD")}
         </p>
         <h1 className="w-full pb-4 pt-2 backdrop-blur-2xl text-2xl font-medium lg:static lg:w-auto">
           {post.title}

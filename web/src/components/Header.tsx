@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import Button from "@/components/common/Button";
+import Button from "./button";
 
 export default function Header() {
   return (

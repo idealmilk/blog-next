@@ -2,11 +2,9 @@
 
 import { Inter } from "next/font/google";
 
-import Header from "@/components/Header";
+import Header from "@/components/header";
 
 import "./globals.css";
-import { usePosts } from "@/store/usePosts";
-import { useEffect } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -15,10 +13,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  useEffect(() => {
-    usePosts.getState().fetchPosts();
-  }, []);
-
   return (
     <html lang="en">
       <body className={inter.className}>

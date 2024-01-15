@@ -1,22 +1,45 @@
 "use client";
 
-import axios from "axios";
-import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 
-import Button from "@/components/common/Button";
-import { formatDate } from "@/helpers/formatDate";
+import Button from "@/components/button";
 import { Post } from "@/types/Post";
-import { LoadPosts } from "@/helpers/loadPosts";
+import { DeletePostBySlug, ReadAllPosts } from "@/app/api/posts";
+import dayjs from "@/utils/dayjs";
 
 export default function Admin() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMorePosts, setHasMorePosts] = useState(true);
 
+  const limit = 10;
+
+  const fetchPosts = async () => {
+    try {
+      const result = await ReadAllPosts(currentPage, limit);
+
+      if (!Array.isArray(result)) {
+        console.error("Received non-array result:", result);
+        return;
+      }
+
+      if (currentPage > 1) {
+        setPosts((prevPosts) => [...prevPosts, ...result]);
+      } else {
+        setPosts(result);
+      }
+
+      setHasMorePosts(result.length >= limit);
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+      setPosts([]);
+    }
+  };
+
   useEffect(() => {
-    LoadPosts(setPosts, currentPage, setHasMorePosts);
+    fetchPosts();
   }, [currentPage]);
 
   const handleLoadMore = () => {
@@ -25,11 +48,12 @@ export default function Admin() {
 
   const deletePost = async (slug: string) => {
     try {
-      await axios.delete(`http://localhost:4000/api/posts/${slug}`);
-      console.log("Post deleted successfully");
-      setPosts((posts) => posts.filter((post) => post.slug !== slug));
+      await DeletePostBySlug(slug);
+      setCurrentPage(1);
+      fetchPosts();
     } catch (error) {
-      console.error("Failed to delete post", error);
+      console.error("Error deleting post:", error);
+      setPosts([]);
     }
   };
 
@@ -48,7 +72,7 @@ export default function Admin() {
             >
               <div className="block items-center md:flex">
                 <p className="mr-6 text-sm text-gray-400 font-light">
-                  {formatDate(new Date(post.dateTime))}
+                  {dayjs(post.dateTime).format("YYYY/MM/DD")}
                 </p>
                 <Link href={`/blog/${post.slug}`}>
                   <p className="text-lg  font-medium pt-1 pb-2 md:py-0 md:text-2xl">

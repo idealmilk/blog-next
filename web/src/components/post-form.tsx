@@ -1,12 +1,11 @@
-import { formatDate } from "@/helpers/formatDate";
-import { truncateString } from "@/helpers/truncateString";
-import { Post } from "@/types/Post";
-import Link from "next/link";
-import Button from "./common/Button";
-import { ChangeEvent, FormEventHandler } from "react";
 import { z } from "zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+
+import { Post } from "@/types/Post";
+import Button from "@/components/button";
+import dayjs from "@/utils/dayjs";
+import { useMemo } from "react";
 
 type PostFormProps = {
   post?: Post;
@@ -14,7 +13,9 @@ type PostFormProps = {
 };
 
 export default function PostForm({ post, postAction }: PostFormProps) {
-  const dateTime = post ? new Date(post.dateTime) : new Date();
+  const dateTime = useMemo(() => {
+    return post ? dayjs(new Date(post.dateTime)) : dayjs(new Date());
+  }, []);
 
   const validationSchema = z.object({
     title: z.string().min(1, { message: "Title is required" }),
@@ -60,7 +61,9 @@ export default function PostForm({ post, postAction }: PostFormProps) {
 
       <div className="flex items-center pb-8 text-gray-400">
         <p className="mr-6 ">投稿日</p>
-        <p className="border rounded-md px-6  py-1">{formatDate(dateTime)}</p>
+        <p className="border rounded-md px-6  py-1">
+          {dayjs(dateTime).format("YYYY/MM/DD")}
+        </p>
       </div>
 
       <div className="pb-6">

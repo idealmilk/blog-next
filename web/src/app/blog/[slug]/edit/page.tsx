@@ -1,53 +1,45 @@
 "use client";
 
-import axios from "axios";
 import { useRouter } from "next/navigation"; // Corrected import
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import PostForm from "@/components/PostForm";
+import { ReadSinglePost, UpdatePost } from "@/app/api/posts";
 import { Post } from "@/types/Post";
 
 export default function EditPost({ params }: { params: { slug: string } }) {
   const router = useRouter();
 
   const [post, setPost] = useState<Post | null>(null);
-  const [originalSlug, setOriginalSlug] = useState<string | null>(null);
+
+  const fetchPost = async () => {
+    try {
+      const result = (await ReadSinglePost(params.slug)) as Post;
+      setPost(result);
+    } catch (error) {
+      console.error("Error fetching post:", error);
+    }
+  };
 
   useEffect(() => {
-    axios
-      .get(`http://localhost:4000/api/posts/${params.slug}`)
-      .then((response) => {
-        console.log("Fetched post:", response.data); // Log the fetched post
-        setPost(response.data);
-        setOriginalSlug(response.data.slug);
-      })
-      .catch((error) => console.error("Error fetching post:", error));
-  }, [params.slug]);
+    fetchPost();
+  });
+
+  const editPost = useCallback(
+    async (data: Post) => {
+      try {
+        await UpdatePost(params.slug, data);
+        router.push(`/blog/${data.slug}`);
+      } catch (error) {
+        console.error("Failed to update post", error);
+      }
+    },
+    [params.slug, router]
+  );
 
   if (!post) {
     return <div>Loading..</div>;
   }
-
-  const editPost = async (data: Post) => {
-    data.dateTime = post.dateTime;
-
-    try {
-      const response = await axios.put(
-        `http://localhost:4000/api/posts/${originalSlug}`,
-        data,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      console.log("Post updated successfully");
-      router.push("/admin");
-    } catch (error) {
-      console.error("Failed to update post", error);
-    }
-  };
 
   return (
     <div className="py-8">

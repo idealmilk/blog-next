@@ -1,20 +1,43 @@
 "use client";
 
-import axios from "axios";
 import { useEffect, useState } from "react";
 
-import PostCard from "@/components/PostCard";
-import Button from "@/components/common/Button";
+import PostCard from "@/components/post-card";
+import Button from "@/components/button";
+import { ReadAllPosts } from "@/app/api/posts";
 import { Post } from "@/types/Post";
-import { LoadPosts } from "@/helpers/loadPosts";
 
 export default function Home() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMorePosts, setHasMorePosts] = useState(true);
 
+  const limit = 10;
+
+  const fetchPosts = async () => {
+    try {
+      const result = await ReadAllPosts(currentPage, limit);
+
+      if (!Array.isArray(result)) {
+        console.error("Received non-array result:", result);
+        return;
+      }
+
+      if (currentPage > 1) {
+        setPosts((prevPosts) => [...prevPosts, ...result]);
+      } else {
+        setPosts(result);
+      }
+
+      setHasMorePosts(result.length >= limit);
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+      setPosts([]);
+    }
+  };
+
   useEffect(() => {
-    LoadPosts(setPosts, currentPage, setHasMorePosts);
+    fetchPosts();
   }, [currentPage]);
 
   const handleLoadMore = () => {
