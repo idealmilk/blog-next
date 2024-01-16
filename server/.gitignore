@@ -1,0 +1,24 @@
+# Node.js runtime files
+node_modules/
+
+# Environment variables
+.env
+
+# Log files
+logs/
+*.log
+
+# Dependency lock files
+package-lock.json
+yarn.lock
+
+# macOS system files
+.DS_Store
+
+# Visual Studio Code settings
+.vscode/
+
+# Compiled output
+dist/
+build/
+out/
