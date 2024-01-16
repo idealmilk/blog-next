@@ -4,11 +4,11 @@ import { useEffect, useState } from "react";
 
 import PostCard from "@/components/post-card";
 import Button from "@/components/button";
-import { ReadAllPosts } from "@/app/api/posts";
-import { Post } from "@/types/Post";
+import { ReadAllPostsAPI } from "@/app/api/posts";
+import { TPost } from "@/types/Post";
 
 export default function Home() {
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [posts, setPosts] = useState<TPost[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMorePosts, setHasMorePosts] = useState(true);
 
@@ -16,7 +16,7 @@ export default function Home() {
 
   const fetchPosts = async () => {
     try {
-      const result = await ReadAllPosts(currentPage, limit);
+      const result = await ReadAllPostsAPI(currentPage, limit);
 
       if (!Array.isArray(result)) {
         console.error("Received non-array result:", result);

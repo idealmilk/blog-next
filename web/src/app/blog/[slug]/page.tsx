@@ -2,16 +2,16 @@
 
 import { useEffect, useState } from "react";
 
-import { ReadSinglePost } from "@/app/api/posts";
-import { Post } from "@/types/Post";
+import { ReadSinglePostAPI } from "@/app/api/posts";
+import { TPost } from "@/types/Post";
 import dayjs from "dayjs";
 
 export default function BlogPost({ params }: { params: { slug: string } }) {
-  const [post, setPost] = useState<Post | null>(null);
+  const [post, setPost] = useState<TPost | null>(null);
 
   const fetchPost = async () => {
     try {
-      const result = (await ReadSinglePost(params.slug)) as Post;
+      const result = (await ReadSinglePostAPI(params.slug)) as TPost;
       setPost(result);
     } catch (error) {
       console.error("Error fetching post:", error);

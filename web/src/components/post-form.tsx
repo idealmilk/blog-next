@@ -2,13 +2,13 @@ import { z } from "zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { Post } from "@/types/Post";
+import { TPost } from "@/types/Post";
 import Button from "@/components/button";
 import dayjs from "@/utils/dayjs";
 import { useMemo } from "react";
 
 type PostFormProps = {
-  post?: Post;
+  post?: TPost;
   postAction: Function;
 };
 
@@ -62,7 +62,7 @@ export default function PostForm({ post, postAction }: PostFormProps) {
       <div className="flex items-center pb-8 text-gray-400">
         <p className="mr-6 ">投稿日</p>
         <p className="border rounded-md px-6  py-1">
-          {dayjs(dateTime).format("YYYY/MM/DD")}
+          {dateTime.format("YYYY/MM/DD")}
         </p>
       </div>
 

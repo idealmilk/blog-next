@@ -12,6 +12,10 @@ export type TFetchResponse<T> = Promise<
     }
 >;
 
+const axiosInstance = axios.create({
+  withCredentials: true,
+});
+
 export const fetchWithErrorHandling = async <T>(
   url: string,
   options: AxiosRequestConfig = {}
@@ -40,7 +44,7 @@ export const fetchWithErrorHandling = async <T>(
     );
   }
 
-  const response = await axios({
+  const response = await axiosInstance({
     url,
     headers,
     // timeout: 10000,
@@ -83,7 +87,7 @@ export const fetchWithErrorHandling = async <T>(
     return response;
   }
   // eslint-disable-next-line no-console
-  console.log("Response:", JSON.stringify(response.data, null, 2));
+  // console.log("Response:", JSON.stringify(response.data, null, 2));
   return response.data;
 };
 

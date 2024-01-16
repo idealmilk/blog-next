@@ -1,4 +1,4 @@
-export type Post = {
+export type TPost = {
   _id?: string;
   title: string;
   slug: string;

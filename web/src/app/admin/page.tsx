@@ -3,22 +3,30 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 
 import Button from "@/components/button";
-import { Post } from "@/types/Post";
-import { DeletePostBySlug, ReadAllPosts } from "@/app/api/posts";
+import { TPost } from "@/types/Post";
+import { DeletePostBySlugAPI, ReadAllPostsAPI } from "@/app/api/posts";
 import dayjs from "@/utils/dayjs";
+import useUser from "@/hooks/useUser";
 
 export default function Admin() {
-  const [posts, setPosts] = useState<Post[]>([]);
+  const { loggedIn } = useUser();
+  const router = useRouter();
+  const [posts, setPosts] = useState<TPost[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMorePosts, setHasMorePosts] = useState(true);
+
+  if (!loggedIn) {
+    router.replace("/signin");
+  }
 
   const limit = 10;
 
   const fetchPosts = async () => {
     try {
-      const result = await ReadAllPosts(currentPage, limit);
+      const result = await ReadAllPostsAPI(currentPage, limit);
 
       if (!Array.isArray(result)) {
         console.error("Received non-array result:", result);
@@ -48,7 +56,7 @@ export default function Admin() {
 
   const deletePost = async (slug: string) => {
     try {
-      await DeletePostBySlug(slug);
+      await DeletePostBySlugAPI(slug);
       setCurrentPage(1);
       fetchPosts();
     } catch (error) {

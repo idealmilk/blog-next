@@ -1,5 +1,4 @@
 import express, { Request, Response } from "express";
-import { Post } from "../types/post";
 import PostModel from "../models/post.model";
 
 export const postsRouter = express.Router();
@@ -17,8 +16,8 @@ postsRouter.post("/", async (req, res) => {
 
     await newPost.save();
     res.status(201).json(newPost);
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
+  } catch (error) {
+    res.status(500).send("Server error");
   }
 });
 
@@ -35,9 +34,8 @@ postsRouter.get("/", async (req: Request, res: Response) => {
 
     console.log("Returned posts:", posts);
     res.status(200).json(posts);
-  } catch (e: any) {
-    console.error("Error in fetching posts:", e.message);
-    res.status(500).send(e.message);
+  } catch (error) {
+    res.status(500).send("Server error");
   }
 });
 
@@ -90,7 +88,7 @@ postsRouter.delete("/:slug", async (req: Request, res: Response) => {
     res
       .status(200)
       .send(`Post with slug ${req.params.slug} deleted successfully`);
-  } catch (error: any) {
-    res.status(500).send(error.message);
+  } catch (error) {
+    res.status(500).send("Server error");
   }
 });
